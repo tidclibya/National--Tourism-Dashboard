@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "title": "لوحة مؤشرات السياحة الشاملة – مركز المعلومات والتوثيق السياحي",
+    "version": "3.1.0",
+    "last_update": "2025-08-21",
+    "source": "وزارة السياحة الليبية"
+  },
+  "latest": {
+    "year": 2024,
+    "facilities": 522,
+    "rooms": 20150,
+    "beds": 46834,
+    "guests": 109371,
+    "companies": 2298,
+    "employment_accommodation": 37000
+  }
+}
