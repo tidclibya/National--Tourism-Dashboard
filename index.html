@@ -1,135 +1,99 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة مؤشرات السياحة – مركز المعلومات والتوثيق السياحي (PRO RTL)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="assets/css/style.css">
+  <title>لوحة مؤشرات السياحة – نسخة كاملة</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {font-family:'Tajawal',sans-serif;background:#f9fbfd;color:#222;margin:0}
+    header{background:#0d62ff;color:#fff;padding:1rem;text-align:center}
+    nav{display:flex;gap:.5rem;background:#eee;padding:.5rem;justify-content:center}
+    nav button{padding:.5rem 1rem;border:none;cursor:pointer;border-radius:6px}
+    nav button.active{background:#c8a041;color:#fff}
+    section{display:none;padding:1rem}
+    section.active{display:block}
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
+    .card{background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);text-align:center}
+    .value{font-size:1.4rem;color:#0d62ff}
+  </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <i class="fa-solid fa-chart-line"></i>
-      <h1>لوحة مؤشرات السياحة – قالب مُحسَّن</h1>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <label class="switch" title="الوضع الداكن">
-        <span class="footnote">الوضع</span>
-        <input id="themeToggle" type="checkbox">
-      </label>
-      <nav class="tabs" id="tabs" style="margin-inline-start:8px">
-        <button data-tab="overview" class="active"><i class="fa-solid fa-house"></i> نظرة عامة</button>
-        <button data-tab="cities"><i class="fa-solid fa-city"></i> المدن والخدمات</button>
-        <button data-tab="map"><i class="fa-solid fa-map"></i> الخريطة</button>
-        <button data-tab="export"><i class="fa-solid fa-download"></i> تصدير</button>
-      </nav>
-    </div>
-  </header>
 
-  <main>
-    <!-- Overview -->
-    <section id="overview" class="tab-panel">
-      <div class="grid">
-        <div class="card" style="grid-column:span 12;display:grid;grid-template-columns:repeat(12,1fr);gap:16px;">
-          <div class="card kpi" style="grid-column:span 2"><div class="icon"><i class="fa-solid fa-calendar-check"></i></div><div><div class="value" id="kpiYear">—</div><div class="label">أحدث سنة</div></div></div>
-          <div class="card kpi" style="grid-column:span 2"><div class="icon"><i class="fa-solid fa-building"></i></div><div><div class="value" id="kpiFacilities">—</div><div class="label">المرافق</div></div></div>
-          <div class="card kpi" style="grid-column:span 2"><div class="icon"><i class="fa-solid fa-door-open"></i></div><div><div class="value" id="kpiRooms">—</div><div class="label">الغرف</div></div></div>
-          <div class="card kpi" style="grid-column:span 2"><div class="icon"><i class="fa-solid fa-bed"></i></div><div><div class="value" id="kpiBeds">—</div><div class="label">الأسرة</div></div></div>
-          <div class="card kpi" style="grid-column:span 2"><div class="icon"><i class="fa-solid fa-person-walking-luggage"></i></div><div><div class="value" id="kpiGuests">—</div><div class="label">النزلاء</div></div></div>
-          <div class="card kpi" style="grid-column:span 2"><div class="icon"><i class="fa-solid fa-briefcase"></i></div><div><div class="value" id="kpiCompanies">—</div><div class="label">الشركات</div></div></div>
-        </div>
+<header>
+  <h1>📊 لوحة مؤشرات السياحة – ليبيا</h1>
+</header>
 
-        <div class="card" style="grid-column:span 7">
-          <h3 class="section-title"><i class="fa-solid fa-chart-line"></i> المؤشرات الوطنية عبر الزمن</h3>
-          <div class="controls">
-            <select id="seriesSelect">
-              <option value="facilities">عدد المرافق</option>
-              <option value="rooms">عدد الغرف</option>
-              <option value="beds">عدد الأسرة</option>
-              <option value="guests">نزلاء المرافق</option>
-              <option value="companies">الشركات السياحية</option>
-              <option value="employment_accommodation">العمالة في مرافق الإيواء</option>
-              <option value="nights">الليالي السياحية</option>
-            </select>
-            <button id="exportOfficialJson" class="pill"><i class="fa-solid fa-file-code"></i> تصدير JSON</button>
-          </div>
-          <canvas id="seriesChart" height="170"></canvas>
-        </div>
+<nav>
+  <button class="tab active" data-tab="overview">نظرة عامة</button>
+  <button class="tab" data-tab="analysis">التحليلات</button>
+  <button class="tab" data-tab="history">التاريخية</button>
+  <button class="tab" data-tab="invest">الاستثمار</button>
+  <button class="tab" data-tab="forecast">التنبؤ</button>
+</nav>
 
-        <div class="card" style="grid-column:span 5">
-          <h3 class="section-title"><i class="fa-solid fa-chart-bar"></i> أعلى المدن بالخدمات السياحية</h3>
-          <canvas id="servicesTopChart" height="170"></canvas>
-        </div>
+<section id="overview" class="active"><div class="kpis" id="kpi-box"></div></section>
+<section id="analysis"><canvas id="chart1"></canvas></section>
+<section id="history"><canvas id="chart2"></canvas></section>
+<section id="invest"><canvas id="chart4"></canvas></section>
+<section id="forecast"><canvas id="chart3"></canvas></section>
 
-        <div class="card" style="grid-column:span 12">
-          <h3 class="section-title"><i class="fa-solid fa-map-location-dot"></i> توزيع الخدمات حسب نوع السياحة</h3>
-          <div class="controls" id="tourismTypeFilter">
-            <button class="pill active" data-type="all">الكل</button>
-            <button class="pill" data-type="ساحلي">ساحلي</button>
-            <button class="pill" data-type="صحراوي">صحراوي</button>
-            <button class="pill" data-type="طبيعة">طبيعة</button>
-            <button class="pill" data-type="آثار">آثار</button>
-            <button class="pill" data-type="جبلي">جبلي</button>
-          </div>
-          <canvas id="tourismTypeChart" height="150"></canvas>
-        </div>
-      </div>
-    </section>
+<script>
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll("section").forEach(sec=>sec.classList.remove("active"));
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
 
-    <!-- Cities -->
-    <section id="cities" class="tab-panel" hidden>
-      <div class="card">
-        <h3 class="section-title"><i class="fa-solid fa-city"></i> مدن × خدمات</h3>
-        <div class="controls">
-          <input type="text" id="citySearch" placeholder="بحث باسم المدينة..." style="padding:10px 12px;border-radius:10px;border:1px solid #233055;background:#0b142c;color:#ecf2ff">
-          <select id="sortBySelect">
-            <option value="total">ترتيب حسب الإجمالي</option>
-            <option value="hotels">ترتيب حسب الفنادق</option>
-            <option value="resorts">ترتيب حسب المنتجعات</option>
-            <option value="restaurants">ترتيب حسب المطاعم</option>
-            <option value="cafes">ترتيب حسب المقاهي</option>
-          </select>
-        </div>
-        <table id="citiesTable" class="display nowrap" style="width:100%"></table>
-      </div>
-    </section>
+async function loadData(file){
+  const res = await fetch('data/'+file);
+  return await res.json();
+}
 
-    <!-- Map -->
-    <section id="map" class="tab-panel" hidden>
-      <div class="card">
-        <h3 class="section-title"><i class="fa-solid fa-map"></i> خريطة توزيع الخدمات</h3>
-        <div id="regionMap"></div>
-      </div>
-    </section>
+// KPIs
+loadData("overview.json").then(data=>{
+  let box=document.getElementById("kpi-box");
+  data.kpis.forEach(k=>{
+    box.innerHTML+=`<div class="card"><div class="value">${k.value}</div><div>${k.label}</div></div>`;
+  });
+});
 
-    <!-- Export -->
-    <section id="export" class="tab-panel" hidden>
-      <div class="card">
-        <h3 class="section-title"><i class="fa-solid fa-download"></i> تنزيل ملفات JSON الجاهزة</h3>
-        <ul class="footnote">
-          <li><a href="data/official_data.json" download>official_data.json</a></li>
-          <li><a href="data/city_coords.json" download>city_coords.json</a></li>
-          <li><a href="data/investment_projects.json" download>investment_projects.json</a></li>
-        </ul>
-      </div>
-    </section>
-  </main>
+// Analysis
+loadData("analysis.json").then(d=>{
+  new Chart(document.getElementById("chart1"),{
+    type:'bar',
+    data:{labels:d.labels,datasets:[{label:d.label,data:d.values,backgroundColor:"#0d62ff"}]}
+  });
+});
 
-  <footer class="footer">
-    © 2025 مركز المعلومات والتوثيق السياحي – ليبيا | قالب PRO RTL
-  </footer>
+// History
+loadData("history.json").then(d=>{
+  new Chart(document.getElementById("chart2"),{
+    type:'line',
+    data:{labels:d.labels,datasets:[{label:d.label,data:d.values,borderColor:"#c8a041",fill:false}]}
+  });
+});
 
-  <!-- libs -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-  <script src="assets/js/app.js"></script>
+// Investment
+loadData("invest.json").then(d=>{
+  new Chart(document.getElementById("chart4"),{
+    type:'pie',
+    data:{labels:d.projects.map(p=>p.name),datasets:[{data:d.projects.map(p=>p.value)}]}
+  });
+});
+
+// Forecast
+loadData("forecast.json").then(d=>{
+  new Chart(document.getElementById("chart3"),{
+    type:'line',
+    data:{
+      labels:d.labels,
+      datasets:d.scenarios.map(s=>({label:s.label,data:s.values,borderColor:s.color,fill:false}))
+    }
+  });
+});
+</script>
 </body>
 </html>
